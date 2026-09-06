@@ -41,6 +41,9 @@ build/
 .env
 .env.*
 !.env.example
+application-local.properties
+node_modules/
+package-lock.json
 
 # OS
 .DS_Store
