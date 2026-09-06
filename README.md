@@ -24,65 +24,71 @@ API backend para o projeto Personal Trainer, feita em Spring Boot 3 + Java 21.
    cd personal-backend
 ```
 
-2. Copie o arquivo de exemplo de variáveis de ambiente:
-```bash
-   cp .env.example .env
+2. Crie o arquivo `src/main/resources/application-local.properties` com a senha do seu banco:
+```properties
+   spring.datasource.password=sua_senha_aqui
 ```
-Depois abra o `.env` e preencha com a senha do seu banco PostgreSQL.
+Esse arquivo é ignorado pelo Git — nunca é commitado, pois contém dado sensível.
 
-3. Exporte a variável de ambiente antes de rodar a aplicação:
+3. Crie o banco de dados `personal_trainer` no PostgreSQL (ou pule esse passo e use o Docker Compose abaixo, que já cria automaticamente).
+
+4. Rode a aplicação ativando o profile `local`:
 
    **Linux/Mac:**
 ```bash
-   export DB_PASSWORD=sua_senha_aqui
+   ./mvnw spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 
 **Windows (PowerShell):**
 ```powershell
-   $env:DB_PASSWORD="sua_senha_aqui"
+   .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
 ```
 
-4. Crie o banco de dados `personal_trainer` no PostgreSQL (ou pule esse passo e use o Docker Compose abaixo, que já cria automaticamente).
-
-5. Rode a aplicação:
-```bash
-   ./mvnw spring-boot:run
-```
-
-No Windows, use `mvnw.cmd spring-boot:run`.
+> **Recomendado se você usa o IntelliJ:** em vez de passar o parâmetro toda vez, configure o profile uma única vez direto na IDE:
+> 1. Vá em **Run → Edit Configurations...**
+> 2. Selecione a configuração `PersonalBackendApplication`
+> 3. No campo **Active profiles**, digite `local`
+> 4. Clique em **Apply** → **OK**
+>
+> A partir daí, todo clique em ▶️ **Run** já ativa o profile `local` automaticamente.
 
 A API vai subir por padrão em `http://localhost:8080`.
 
-## Banco de dados via Docker (recomendado)
+## Banco de dados via Docker (opcional)
 
 Se você não quiser instalar o PostgreSQL na sua máquina, use o Docker Compose incluso no projeto:
 
+1. Copie o arquivo de exemplo e preencha com a senha:
 ```bash
-docker compose up -d
+   cp .env.example .env
 ```
+**Atenção:** esse `.env` é usado apenas pelo `docker-compose.yaml` (senha do container PostgreSQL). Ele não tem relação com a aplicação Spring Boot, que usa o `application-local.properties` do passo anterior — são dois mecanismos separados.
 
-Isso vai subir um container PostgreSQL já configurado com o banco `personal_trainer`, usando a mesma variável `DB_PASSWORD` do seu `.env`.
+2. Suba o container:
+```bash
+   docker compose up -d
+```
 
 Para derrubar o container:
 ```bash
 docker compose down
 ```
+(os dados ficam salvos no volume `postgres_data` entre reinícios — só `docker compose down -v` apaga o volume)
 
 ## Migrations
 
-O projeto usa **Flyway** para versionamento do banco de dados. As migrations ficam em:
+O projeto usa **Flyway** para versionamento do banco de dados. As migrations ficam em: `src/main/resources/db/migration`.
 
-```
-src/main/resources/db/migration
-```
+Toda alteração no schema do banco deve ser feita através de um novo arquivo de migration (ex: `V3__adiciona_tabela_x.sql`), nunca alterando uma migration já aplicada. O `ddl-auto` está configurado como `validate`, ou seja, o Hibernate só valida se as entidades batem com o schema — ele não cria nem altera tabelas automaticamente.
 
-Toda alteração no schema do banco deve ser feita através de um novo arquivo de migration (ex: `V2__adiciona_tabela_x.sql`), nunca alterando o banco diretamente. O `ddl-auto` está configurado como `validate`, ou seja, o Hibernate só valida se as entidades batem com o schema — ele não cria nem altera tabelas automaticamente.
+## Configuração sensível
 
-## Variáveis de ambiente
+| Arquivo | Usado por | Conteúdo |
+|---|---|---|
+| `application-local.properties` | Aplicação Spring Boot | `spring.datasource.password` |
+| `.env` | Docker Compose | `DB_PASSWORD` |
 
-| Variável      | Descrição                          | Exemplo         |
-|---------------|-------------------------------------|------------------|
-| `DB_PASSWORD` | Senha do banco PostgreSQL           | `minhaSenha123`  |
+Nenhum dos dois é commitado — ambos estão no `.gitignore`.
 
 ## Estrutura do projeto
 
@@ -91,7 +97,7 @@ src/main/java/com/personaltrainer/
 └── PersonalBackendApplication.java   # classe principal
 
 src/main/resources/
-├── application.properties            # configurações da aplicação
+├── application.properties            # configurações gerais (sem dados sensíveis)
 └── db/migration/                     # migrations do Flyway
 ```
 
@@ -100,6 +106,8 @@ src/main/resources/
 ```bash
 ./mvnw test
 ```
+
+Os testes usam o profile `local` (via `@ActiveProfiles("local")` na classe de teste), então o `application-local.properties` precisa existir antes de rodá-los.
 
 ## Contribuindo
 
