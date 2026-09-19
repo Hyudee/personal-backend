@@ -1,4 +1,4 @@
-package com.personaltrainer.user;
+package com.personaltrainer.student;
 
 import com.personaltrainer.user.User;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.personaltrainer.accountDraft;
+package com.personaltrainer.accountdraft;
 
 import com.personaltrainer.user.User;
 import jakarta.persistence.*;

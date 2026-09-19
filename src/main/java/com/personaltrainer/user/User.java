@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Table
-@Entity (name = "users")
+@Table (name = "users")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,13 +19,18 @@ public class User {
     private Long id;
 
     @Column (nullable = false)
-    private String user;
+    private String name;
 
-    @Column (nullable = false)
+    @Column (nullable = false, unique = true)
     private String email;
 
     @Column (nullable = false)
     private String password;
+
+    @Enumerated (EnumType.STRING)
+    @Column (nullable = false, length = 20)
+    private UserRole role;
+
 
     @Enumerated (EnumType.STRING)
     @Column (nullable = false, length = 20)

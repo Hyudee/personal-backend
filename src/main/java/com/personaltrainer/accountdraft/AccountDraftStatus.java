@@ -1,4 +1,4 @@
-package com.personaltrainer.accountDraft;
+package com.personaltrainer.accountdraft;
 
 public enum AccountDraftStatus {
     PENDING_PAYMENT,
