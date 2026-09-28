@@ -22,7 +22,7 @@ public class PixKey {
     @Column (name = "key_value", nullable = false, unique = true)
     private String keyValue;
 
-    @Column
+    @Column (nullable = false)
     @Builder.Default
     private Boolean active = true;
 

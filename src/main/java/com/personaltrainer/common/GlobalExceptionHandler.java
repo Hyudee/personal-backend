@@ -1,8 +1,10 @@
 package com.personaltrainer.common;
 
 import com.personaltrainer.accountdraft.EmailAlreadyInUseException;
+import com.personaltrainer.accountdraft.InvalidPaymentDayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +18,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler (EmailAlreadyInUseException.class)
     public ResponseEntity <Map<String, String>> handleEmailAlreadyInUse(EmailAlreadyInUseException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of ("erro", ex.getMessage()));
+    }
+
+    @ExceptionHandler (InvalidPaymentDayException.class)
+    public ResponseEntity <Map<String,String>> handleInvalidPaymentDay (InvalidPaymentDayException ex) {
+        return ResponseEntity.badRequest().body(Map.of ("erro", ex.getMessage()));
     }
 
     @ExceptionHandler (IllegalArgumentException.class)

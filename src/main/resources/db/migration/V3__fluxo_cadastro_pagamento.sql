@@ -10,18 +10,18 @@ ALTER TABLE plans ADD COLUMN active BOOLEAN NOT NULL DEFAULT true;
 -- Chaves Pix aleatorias do personal
 CREATE TABLE pix_keys (
     id         BIGSERIAL PRIMARY KEY,
-    key_value  VARCHARH(255) NOT NULL UNIQUE,
+    key_value  VARCHAR(255) NOT NULL UNIQUE,
     active     BOOLEAN       NOT NULL DEFAULT true,
     created_at TIMESTAMP     NOT NULL DEFAULT now()
 );
 
 -- Dias do pagamento, personal determina os dias
-CREATE TABLE payment_day(
-    date_of_month INT PRIMARY KEY CHECK ( date_of_month BETWEEN 1 AND 30),
+CREATE TABLE payment_days(
+    day_of_month INT PRIMARY KEY CHECK ( day_of_month BETWEEN 1 AND 28),
     active BOOLEAN NOT NULL DEFAULT true
 );
 
-INSERT INTO payment_day (date_of_month) (VALUES (5), (10), (15), (20));
+INSERT INTO payment_days (day_of_month) VALUES (5), (10), (15), (20);
 
 -- Draft: Plano escolhido, dia de pagamento e chave pix
 
