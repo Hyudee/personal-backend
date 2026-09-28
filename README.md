@@ -1,6 +1,6 @@
 # Personal Backend
 
-API backend para o projeto Personal Trainer, feita em Spring Boot 3 + Java 21.
+API backend para o projeto Personal Trainer, feita em Spring Boot 4 + Java 21.
 
 ## Stack
 
@@ -79,7 +79,17 @@ docker compose down
 
 O projeto usa **Flyway** para versionamento do banco de dados. As migrations ficam em: `src/main/resources/db/migration`.
 
-Toda alteração no schema do banco deve ser feita através de um novo arquivo de migration (ex: `V3__adiciona_tabela_x.sql`), nunca alterando uma migration já aplicada. O `ddl-auto` está configurado como `validate`, ou seja, o Hibernate só valida se as entidades batem com o schema — ele não cria nem altera tabelas automaticamente.
+Toda alteração no schema do banco deve ser feita através de um novo arquivo de migration (ex: `V4__adiciona_tabela_x.sql`), nunca alterando uma migration já aplicada. O `ddl-auto` está configurado como `validate`, ou seja, o Hibernate só valida se as entidades batem com o schema — ele não cria nem altera tabelas automaticamente.
+
+## Configuração de pagamento (WhatsApp)
+
+O fluxo de cadastro gera links de pagamento via WhatsApp (cobrança e confirmação de Pix). Para isso, defina a variável de ambiente `PERSONAL_WHATSAPP` com o número do personal (com DDI/DDD, ex: `5584940028922`) antes de subir a aplicação:
+
+```bash
+export PERSONAL_WHATSAPP=5584940028922
+```
+
+Se a variável não for definida, os links de WhatsApp (`whatsappPaymentUrl` / `whatsappPixPaidUrl`) voltam como `null` na resposta da API, mas o cadastro do draft continua funcionando normalmente. As mensagens template ficam em `application.properties` (`app.payment.pay-message-template` e `app.payment.pix-paid-message-template`).
 
 ## Configuração sensível
 
@@ -94,11 +104,21 @@ Nenhum dos dois é commitado — ambos estão no `.gitignore`.
 
 ```
 src/main/java/com/personaltrainer/
-└── PersonalBackendApplication.java   # classe principal
+├── PersonalBackendApplication.java   # classe principal
+├── accountdraft/                     # pré-cadastro: pagamento pendente -> aprovação -> vira User
+│   └── dto/
+├── billing/
+│   ├── payment/                      # chaves Pix, dias de pagamento, links de cobrança
+│   └── plan/                         # planos (nome, preço, periodicidade)
+├── common/                           # tratamento global de exceções
+├── config/                           # configuração de segurança, beans gerais
+├── email/                            # notificações por e-mail (cadastro aprovado)
+├── student/                          # perfil do aluno
+└── user/                             # conta de usuário (personal/aluno)
 
 src/main/resources/
 ├── application.properties            # configurações gerais (sem dados sensíveis)
-└── db/migration/                     # migrations do Flyway
+└── db/migration/                     # migrations do Flyway (V1 a V3 até o momento)
 ```
 
 ## Rodando os testes

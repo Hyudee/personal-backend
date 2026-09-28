@@ -20,7 +20,7 @@ public record CreateAccountDraftRequest(
         Long planId,
 
         @NotNull
-        @Min (1) @Max (30)
+        @Min (1) @Max (28)
         Integer paymentDay
 ) {
 }
