@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table (name = "pix_keys")
+@Table (name = "billing_records")
 @Getter
 @Setter
 @Builder
