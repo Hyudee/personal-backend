@@ -18,7 +18,7 @@ public class Student {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @OneToOne (fetch = FetchType.LAZY)
     @JoinColumn (name = "user_id", nullable = false, unique = true)
@@ -27,6 +27,16 @@ public class Student {
     private String phone;
 
     private LocalDate birthDate;
+
+    @Enumerated (EnumType.STRING)
+    @Column (length = 10)
+    private Sex sex;
+
+    private Integer paymentDay;
+
+    @Column (nullable = false)
+    @Builder.Default
+    private Boolean profileCompleted = false;
 
     @Column (nullable = false)
     @Builder.Default

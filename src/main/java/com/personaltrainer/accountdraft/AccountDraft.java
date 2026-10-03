@@ -1,5 +1,7 @@
 package com.personaltrainer.accountdraft;
 
+import com.personaltrainer.billing.payment.PixKey;
+import com.personaltrainer.billing.plan.Plan;
 import com.personaltrainer.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +19,7 @@ public class AccountDraft {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column (nullable = false)
     private String name;
@@ -27,6 +29,16 @@ public class AccountDraft {
 
     @Column (nullable = false)
     private String password;
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "plan_id")
+    private Plan plan;
+
+    private Integer paymentDay;
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "pix_key_id")
+    private PixKey pixKey;
 
     @Enumerated (EnumType.STRING)
     @Column (nullable = false, length = 20)
