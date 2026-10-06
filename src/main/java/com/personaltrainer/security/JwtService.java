@@ -62,7 +62,7 @@ public class JwtService {
     }
 
     public Long extractUserId (String token) {
-        return parseClaims(token).get(CLAIM_USER_ID, Long.class)
+        return parseClaims(token).get(CLAIM_USER_ID, Long.class);
     }
 
 }
