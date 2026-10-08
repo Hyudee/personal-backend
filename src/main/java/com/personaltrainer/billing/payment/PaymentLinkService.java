@@ -47,6 +47,6 @@ public class PaymentLinkService {
                 .replace("{draftId}", String.valueOf(draft.getId()));
 
         String encoded = URLEncoder.encode(message, StandardCharsets.UTF_8).replace("+", "%20");
-        return "https://wa.me" + number.replaceAll("\\D", "") + "?text=" + encoded;
+        return "https://wa.me/" + number.replaceAll("\\D", "") + "?text=" + encoded;
     }
 }

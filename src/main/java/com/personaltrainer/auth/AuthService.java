@@ -31,7 +31,7 @@ public class AuthService {
 
     @Transactional
     public LoginResponse login(LoginRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
+        if (!userRepository.existsByEmail(request.email())) {
             throw fixDraftFailure(request.email());
         }
 
