@@ -29,7 +29,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${app.cors.allowed-origins:https://localhost:5173}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173}")
     private List<String> allowedOrigins;
 
     @Bean
@@ -64,6 +64,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/account-drafts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/account-drafts")
+                            .hasRole("PERSONAL")
                         .requestMatchers(HttpMethod.GET, "/api/plans", "/api/payment-days").permitAll()
                         .requestMatchers("/api/account-drafts/*/aprovar", "/api/account-drafts/*/rejeitar")
                             .hasRole("PERSONAL")

@@ -1,10 +1,7 @@
 package com.personaltrainer.accountdraft;
 
 
-import com.personaltrainer.accountdraft.dto.AccountDraftResponse;
-import com.personaltrainer.accountdraft.dto.CreateAccountDraftRequest;
-import com.personaltrainer.accountdraft.dto.ReviewDraftRequest;
-import com.personaltrainer.accountdraft.dto.UserResponse;
+import com.personaltrainer.accountdraft.dto.*;
 import com.personaltrainer.billing.payment.PaymentLinkService;
 import com.personaltrainer.security.AuthenticatedUser;
 import com.personaltrainer.user.User;
@@ -14,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping ("/api/account-drafts")
@@ -54,5 +53,13 @@ public class AccountDraftController {
         String reason = request !=null ? request.reason() : null;
         accountDraftService.rejeitar(id, reviewer.getId(), reason);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public List<AccountDraftSummaryResponse> listar(
+            @RequestParam (defaultValue = "PENDING_PAYMENT") AccountDraftStatus status) {
+        return accountDraftService.listar(status).stream()
+                .map(AccountDraftSummaryResponse::from)
+                .toList();
     }
 }

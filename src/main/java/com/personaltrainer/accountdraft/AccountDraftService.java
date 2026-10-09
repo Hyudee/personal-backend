@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -121,6 +122,15 @@ public class AccountDraftService {
         draft.setRejectionReason(reason);
 
         accountDraftRepository.save(draft);
+    }
+
+    @Transactional (readOnly = true)
+    public List <AccountDraft> listar (AccountDraftStatus status) {
+        if (status == AccountDraftStatus.PENDING_PAYMENT) {
+            return accountDraftRepository
+                    .findByStatusAndExpiresAtAfterOrderByCreatedAtAsc(status, LocalDateTime.now());
+        }
+        return accountDraftRepository.findByStatusOrderByCreatedAtDesc(status);
     }
 
     private void FreeEmailIfPendingDraftExpired (String email) {
