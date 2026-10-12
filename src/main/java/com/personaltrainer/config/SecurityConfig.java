@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/plans", "/api/payment-days").permitAll()
                         .requestMatchers("/api/account-drafts/*/aprovar", "/api/account-drafts/*/rejeitar")
                             .hasRole("PERSONAL")
+                        .requestMatchers("/api/students/**").hasRole("PERSONAL")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
