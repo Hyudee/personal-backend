@@ -1,17 +1,18 @@
 package com.personaltrainer.accountdraft;
 
 
-import com.personaltrainer.accountdraft.dto.AccountDraftResponse;
-import com.personaltrainer.accountdraft.dto.CreateAccountDraftRequest;
-import com.personaltrainer.accountdraft.dto.ReviewDraftRequest;
-import com.personaltrainer.accountdraft.dto.UserResponse;
+import com.personaltrainer.accountdraft.dto.*;
 import com.personaltrainer.billing.payment.PaymentLinkService;
+import com.personaltrainer.security.AuthenticatedUser;
 import com.personaltrainer.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping ("/api/account-drafts")
@@ -38,17 +39,27 @@ public class AccountDraftController {
     @PostMapping("/{id}/aprovar")
     public ResponseEntity<UserResponse> aprovar(
             @PathVariable Long id,
-            @Valid @RequestBody ReviewDraftRequest request){
+            @AuthenticationPrincipal AuthenticatedUser reviewer){
 
-        User user = accountDraftService.aprovar(id, request.reviewerId());
+        User user = accountDraftService.aprovar(id, reviewer.getId());
         return ResponseEntity.ok (UserResponse.from(user));
     }
 
     @PostMapping ("/{id}/rejeitar")
     public ResponseEntity <Void> rejeitar(
             @PathVariable Long id,
-            @Valid @RequestBody ReviewDraftRequest request){
-        accountDraftService.rejeitar(id, request.reviewerId(), request.reason());
+            @AuthenticationPrincipal AuthenticatedUser reviewer,
+            @Valid @RequestBody (required = false) ReviewDraftRequest request) {
+        String reason = request !=null ? request.reason() : null;
+        accountDraftService.rejeitar(id, reviewer.getId(), reason);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public List<AccountDraftSummaryResponse> listar(
+            @RequestParam (defaultValue = "PENDING_PAYMENT") AccountDraftStatus status) {
+        return accountDraftService.listar(status).stream()
+                .map(AccountDraftSummaryResponse::from)
+                .toList();
     }
 }
